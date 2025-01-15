@@ -5,7 +5,7 @@ Basic SQL Querying Using Northwind Database
 
 ### **GET /api/customers**
 
-### **GET /api/customer/offset=<INTEGER>&limit=<INTEGER>**
+### **GET /api/customer/offset=<int>&limit=<int>**
 
 ### **GET /api/customer/<customer_id>**
 
