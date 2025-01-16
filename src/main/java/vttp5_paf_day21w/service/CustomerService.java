@@ -1,6 +1,7 @@
 package vttp5_paf_day21w.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,7 @@ public class CustomerService {
 
     }
 
-    public Customer getCustomerById(int id) { 
+    public Optional<Customer> getCustomerById(int id) { 
 
         return customerRepo.getCustomerById(id);
 

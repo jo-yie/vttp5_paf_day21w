@@ -2,6 +2,7 @@ package vttp5_paf_day21w.repo;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -47,19 +48,18 @@ public class CustomerRepo {
 
     }
 
-    public Customer getCustomerById(int id) { 
+    // using Optional 
+    public Optional<Customer> getCustomerById(int id) { 
 
         SqlRowSet rs = template.queryForRowSet(Queries.SQL_SELECT_CUSTOMER_BY_ID, id);
 
-        Customer c = new Customer();
-
-        while (rs.next()) { 
-            c = Customer.toCustomer(rs);
-            
+        if (!rs.next()) {
+            return Optional.empty();
         }
 
-        return c; 
-        
+        Customer c = Customer.toCustomer(rs);
+        return Optional.of(c);
+
     }
 
     public List<Order> getOrdersById(int id) { 

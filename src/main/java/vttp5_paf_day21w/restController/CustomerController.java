@@ -1,8 +1,11 @@
 package vttp5_paf_day21w.restController;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,24 +46,29 @@ public class CustomerController {
 
     }
 
-    // task 3B 
+    // task 3B
     // GET /api/customer/<customer_id> 
+    // using Optional
     @GetMapping("/customer/{customer_id}")
-    public ResponseEntity<Customer> getCustomerById(@PathVariable int customer_id) { 
+    public ResponseEntity<Object> getCustomerById(@PathVariable int customer_id) { 
 
-        // return 404 and appropriaye error object 
-        // if customer doesn't exist 
+        Optional<Customer> c = customerService.getCustomerById(customer_id);
 
-        try {
+        if (c.isPresent()) {
 
-            Customer c = customerService.getCustomerById(customer_id);
-            return ResponseEntity.ok().body(c);
+            Customer customer = c.get(); 
 
-        } catch (Exception e) { 
+            // get list of order objects 
+            List<Order> orders = customerService.getOrdersById(customer_id); 
+            customer.setOrders(orders);
 
-            // TODO customer objects are still being returned for entries that don't exists
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.ok(customer); 
 
+        } else {
+
+            // return 404 is customer doesn't exist 
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                 .body(Map.of("Error", "Customer doesn't exist"));
         }
 
     }
@@ -68,22 +76,24 @@ public class CustomerController {
     // task 3C
     // GET /api/customer/<customer_id>/orders
     @GetMapping("/customer/{customer_id}/orders")
-    public ResponseEntity<List<Order>> getCustomerOrders(@PathVariable int customer_id) { 
+    public ResponseEntity<Object> getCustomerOrders(@PathVariable int customer_id) { 
         
-        // return 404 if customer doesn't exist 
+        Optional<Customer> c = customerService.getCustomerById(customer_id);
 
-        try {
+        if (c.isPresent()) {
 
             List<Order> orders = customerService.getOrdersById(customer_id);
+
+            // return empty array if no orders found
             return ResponseEntity.ok().body(orders);
 
-        } catch (Exception e) {
+        } else { 
 
-            // return empty array if no orders
-            return ResponseEntity.ok().body(null);
+            // return 404 if customer doesn't exist
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                .body(Map.of("Error", "Customer doesn't exist"));
 
         }
-
 
     }
 
